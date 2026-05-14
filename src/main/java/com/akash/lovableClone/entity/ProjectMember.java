@@ -1,10 +1,7 @@
 package com.akash.lovableClone.entity;
 
 import com.akash.lovableClone.enums.ProjectRole;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,17 +9,26 @@ import java.time.Instant;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-//@Entity
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "project_members")
 public class ProjectMember
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EmbeddedId
     ProjectMemeberId id;
+
+    @ManyToOne
+    @MapsId("projectId")
     Project project;
+
+    @ManyToOne
+    @MapsId("userId")
     User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     ProjectRole projectRole;
     Instant invitedAt;
     Instant acceptedAt;
