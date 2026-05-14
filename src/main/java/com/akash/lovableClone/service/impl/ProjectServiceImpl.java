@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Transactional
 public class ProjectServiceImpl implements ProjectService
 {
@@ -27,13 +27,17 @@ public class ProjectServiceImpl implements ProjectService
     UserRepository userRepository;
     ProjectMapper projectMapper;
     @Override
-    public List<ProjectSummaryResponse> getUserProjects(Long userId) {
-        return List.of();
+    public List<ProjectSummaryResponse> getUserProjects(Long userId)
+    {
+        return projectMapper.convertToListOfProjectSummaryResponse(
+                projectRepository.getAllAccessibleProjectsByUser(userId));
     }
 
     @Override
-    public ProjectResponse getUserProjectById(Long userId, Long projectId) {
-        return null;
+    public ProjectResponse getUserProjectById(Long userId, Long projectId)
+    {
+        Project project = projectRepository.getAccessibleProjectById(projectId, userId).orElseThrow();
+        return projectMapper.convertToProjectResponse(project);
     }
 
     @Override
@@ -43,6 +47,7 @@ public class ProjectServiceImpl implements ProjectService
         Project project = Project.builder()
                 .name(projectRequest.name())
                 .owner(objUser)
+                .isPublic(false)
                 .build();
         project = projectRepository.save(project);
         return projectMapper.convertToProjectResponse(project);

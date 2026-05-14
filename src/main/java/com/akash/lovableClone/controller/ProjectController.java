@@ -4,7 +4,9 @@ import com.akash.lovableClone.dto.project.ProjectRequest;
 import com.akash.lovableClone.dto.project.ProjectResponse;
 import com.akash.lovableClone.dto.project.ProjectSummaryResponse;
 import com.akash.lovableClone.service.ProjectService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +15,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping("api/projects")
 public class ProjectController
 {
-    private final ProjectService projectService;
+    ProjectService projectService;
 
     @GetMapping
     public ResponseEntity<List<ProjectSummaryResponse>> getMyProjects()
@@ -25,7 +28,7 @@ public class ProjectController
         return ResponseEntity.ok(projectService.getUserProjects(userId));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{projectId}")
     public ResponseEntity<ProjectResponse> getProjectById(@PathVariable Long projectId)
     {
         Long userId = 1L;
