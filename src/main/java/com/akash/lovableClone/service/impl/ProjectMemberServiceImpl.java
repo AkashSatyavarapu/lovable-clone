@@ -78,7 +78,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     {
         Project project = projectRepository.getAccessibleProjectById(projectId, userId).orElseThrow();
         if (!project.getOwner().getId().equals(userId))
-            throw new RuntimeException("You are not allowed to invite!!!");
+            throw new RuntimeException("You are not allowed to update!!!");
 
         ProjectMemeberId projectMemeberId = new ProjectMemeberId(projectId, memberId);
         ProjectMember projectMember = projectMemberRepository.findById(projectMemeberId).orElseThrow();
@@ -88,8 +88,15 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public MemberResponse deleteProjectMember(Long projectId, Long memberId, Long userId) {
-        return null;
+    public void removeProjectMember(Long projectId, Long memberId, Long userId)
+    {
+        Project project = projectRepository.getAccessibleProjectById(projectId, userId).orElseThrow();
+        if (!project.getOwner().getId().equals(userId))
+            throw new RuntimeException("You are not allowed to remove!!!");
+        ProjectMemeberId projectMemeberId = new ProjectMemeberId(projectId, memberId);
+        if (!projectMemberRepository.existsById(projectMemeberId))
+            throw new RuntimeException("Member does not exist!!!");
+        projectMemberRepository.deleteById(projectMemeberId);
     }
 
 
